@@ -36,7 +36,23 @@ object MyModule {
 
   // Exercise 1: Write a function to compute the nth fibonacci number
 
-  def fib(n: Int): Int = ???
+  def fib(n: Int): Int = {
+//    @annotation.tailrec
+//    def go(a: Int, n: Int, limit: Int, acc: Int): Int =
+//      if (n > limit) acc
+//      else if(n == 0) go(0, n + 1, limit, 0)
+//      else if(n == 1) go(0, n + 1, limit, 1)
+//      else go(acc, n + 1, limit, a + acc)
+//
+//    go(0, 0, n, 0)
+
+    @annotation.tailrec
+    def go(n: Int, prev: Int, acc: Int): Int =
+      if (n == 0) prev
+      else go(n-1, acc, prev + acc)
+
+    go(n, 0, 1)
+  }
 
   // This definition and `formatAbs` are very similar..
   private def formatFactorial(n: Int) = {
@@ -64,12 +80,13 @@ object FormatAbsAndFactorial {
   }
 }
 
-object TestFib {
+object MyModuleTest {
 
   import MyModule._
 
   // test implementation of `fib`
   def main(args: Array[String]): Unit = {
+    // exercise 2.1
     println("Expected: 0, 1, 1, 2, 3, 5, 8")
     println("Actual:   %d, %d, %d, %d, %d, %d, %d".format(fib(0), fib(1), fib(2), fib(3), fib(4), fib(5), fib(6)))
   }
@@ -140,7 +157,18 @@ object PolymorphicFunctions {
 
   // Exercise 2: Implement a polymorphic function to check whether
   // an `Array[A]` is sorted
-  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = ???
+  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = {
+    @annotation.tailrec
+    def go(n: Int): Boolean = {
+      if (n >= (as.length - 1)) true
+      else if (gt(as(n), as(n+1))) go(n+1)
+      else false
+    }
+
+    go(0)
+
+    // NOTE: 回答はifがtrueだったらfalseを返しているので、降順のソートを期待している？
+  }
 
   // Polymorphic functions are often so constrained by their type
   // that they only have one implementation! Here's an example:
@@ -175,4 +203,18 @@ object PolymorphicFunctions {
 
   def compose[A,B,C](f: B => C, g: A => B): A => C =
     ???
+}
+
+object PolymorphicFunctionsTest {
+
+  import PolymorphicFunctions._
+
+  // test implementation of `fib`
+  def main(args: Array[String]): Unit = {
+    // exercise 2.2
+    println("Expected: true")
+    println("Actual:   %s".format(isSorted(Array(0, 1, 2), (a: Int, b: Int) => a <= b)))
+    println("Expected: false")
+    println("Actual:   %s".format(isSorted(Array(0, 2, 1), (a: Int, b: Int) => a <= b)))
+  }
 }
