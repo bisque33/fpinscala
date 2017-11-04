@@ -112,9 +112,57 @@ object List { // `List` companion object. Contains functions for creating and wo
     go(l, Nil)
   }
 
-  def length[A](l: List[A]): Int = ???
+  // exercise 3.9
+  def length[A](l: List[A]): Int = {
+    foldRight(l, 0)((x, y) => 1 + y)
+  }
 
-  def foldLeft[A, B](l: List[A], z: B)(f: (B, A) => B): B = ???
+  // exercise 3.10
+  def foldLeft[A, B](l: List[A], z: B)(f: (B, A) => B): B = {
+    @annotation.tailrec
+    def go(list: List[A], acc: B): B = list match {
+      case Nil => acc
+      case Cons(head, tail) => go(tail, f(acc, head))
+    }
+
+    go(l, z)
+  }
+
+  // exercise 3.10 別解
+  //  @annotation.tailrec
+  //  def foldLeft[A, B](l: List[A], z: B)(f: (B, A) => B): B = l match {
+  //    case Nil => z
+  //    case Cons(head, tail) => foldLeft(tail, f(z, head))(f)
+  //  }
+
+  // exercise 3.11.1
+  def sum_by_foldLeft(ints: List[Int]): Int =
+    foldLeft(ints, 0)(_ + _)
+
+  // exercise 3.11.2
+  def product_by_foldLeft(ds: List[Double]): Double =
+    foldLeft(ds, 1.0)(_ * _)
+
+  // exercise 3.11.3
+  def length_by_foldLeft[A](l: List[A]): Int = {
+    foldLeft(l, 0)((b, a) => b + 1)
+  }
+
+  // exercise 3.12
+  def reverse[A](l: List[A]): List[A] =
+    foldLeft(l, List[A]())((acc, a) => Cons(a, acc))
+
+  // NG: foldLeft(l, Nil)((acc, a) => Cons(a, acc))
+  // NilにするとBの型が関数の戻り値と一致しないため
+
+  // exercise 3.13 [難問]
+
+  // exercise 3.14
+  def append_by_foldRight[A](a1: List[A], a2: List[A]): List[A] =
+    foldRight(a1, a2)((h, acc) => Cons(h, acc))
+
+  // exercise 3.15 [難問]
+
 
   def map[A, B](l: List[A])(f: A => B): List[B] = ???
 }
@@ -179,5 +227,69 @@ object ListTest {
     //    val list = Nil
     //    println("Expected: Nil")
     //    println("Actual:   %s".format(List.tail(list)))
+
+    // exercise 3.7
+    // fは最後の要素まで展開してから実行されるため、早期終了はできない.
+
+    // exercise 3.8
+    //    println("Expected: List(1,2,3)")
+    //    println("Actual:   %s".format(List.foldRight(List(1,2,3), Nil: List[Int])(Cons(_,_))))
+
+    // exercise 3.9
+    //    val list = List(1,2,3)
+    //    println("Expected: 3")
+    //    println("Actual:   %s".format(List.length(list)))
+    //    val list = Nil
+    //    println("Expected: 0")
+    //    println("Actual:   %s".format(List.length(list)))
+
+    // exercise 3.11.1
+    //    val list = List(1, 2, 3, 4, 5)
+    //    println("Expected: 15")
+    //    println("Actual:   %s".format(List.sum_by_foldLeft(list)))
+    //    val list = Nil
+    //    println("Expected: 0")
+    //    println("Actual:   %s".format(List.sum_by_foldLeft(list)))
+
+    // exercise 3.11.2
+    //    val list = List(1.0, 2.0, 3.0, 4.0, 5.0)
+    //    println("Expected: 120.0")
+    //    println("Actual:   %s".format(List.product_by_foldLeft(list)))
+    //    val list = List(0.0, 1.0, 2.0)
+    //    println("Expected: 0.0")
+    //    println("Actual:   %s".format(List.product_by_foldLeft(list)))
+    //    val list = Nil
+    //    println("Expected: 1.0")
+    //    println("Actual:   %s".format(List.product_by_foldLeft(list)))
+
+    // exercise 3.11.3
+    //    val list = List(1, 2, 3)
+    //    println("Expected: 3")
+    //    println("Actual:   %s".format(List.length_by_foldLeft(list)))
+    //    val list = Nil
+    //    println("Expected: 0")
+    //    println("Actual:   %s".format(List.length_by_foldLeft(list)))
+
+    // exercise 3.12
+    //    val list = List(1, 2, 3)
+    //    println("Expected: List(3,2,1)")
+    //    println("Actual:   %s".format(List.reverse(list)))
+    //    val list = Nil
+    //    println("Expected: Nil")
+    //    println("Actual:   %s".format(List.reverse(list)))
+
+    // exercise 3.14
+    //    val list1 = List(1, 2, 3)
+    //    val list2 = List(4, 5, 6)
+    //    println("Expected: List(1,2,3,4,5,6)")
+    //    println("Actual:   %s".format(List.append_by_foldRight(list1, list2)))
+    //    val list1 = Nil
+    //    val list2 = List(4, 5, 6)
+    //    println("Expected: List(4,5,6)")
+    //    println("Actual:   %s".format(List.append_by_foldRight(list1, list2)))
+    //    val list1 = List(1, 2, 3)
+    //    val list2 = Nil
+    //    println("Expected: List(1,2,3)")
+    //    println("Actual:   %s".format(List.append_by_foldRight(list1, list2)))
   }
 }
