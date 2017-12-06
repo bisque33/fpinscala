@@ -163,8 +163,66 @@ object List { // `List` companion object. Contains functions for creating and wo
 
   // exercise 3.15 [難問]
 
+  // exercise 3.16
+  def increment(list: List[Int]): List[Int] = {
+    foldRight(list, List[Int]())((a, l) => Cons(a + 1, l))
+  }
 
-  def map[A, B](l: List[A])(f: A => B): List[B] = ???
+  // exercise 3.17
+  def doubleToString(list: List[Double]): List[String] = {
+    foldRight(list, List[String]())((a, l) => Cons(a.toString, l))
+  }
+
+  // exercise 3.18
+  def map[A, B](l: List[A])(f: A => B): List[B] =
+    foldRight(l, List[B]())((a, l) => Cons(f(a), l))
+
+  // exercise 3.19
+  def filter[A](as: List[A])(f: A => Boolean): List[A] =
+    foldRight(as, List[A]())((a, l) => f(a) match {
+      case true => Cons(a, l)
+      case false => l
+    })
+
+  // exercise 3.20
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] =
+    foldRight(as, List[B]())((a, l) => append(f(a), l))
+
+  // exercise 3.21
+  def filterByFlatMap[A](as: List[A])(f: A => Boolean): List[A] =
+    flatMap(as)(a => if (f(a)) List(a) else Nil)
+
+  // exercise 3.22
+  def add[A](list1: List[A], list2: List[A]): List[A] = {
+    def go(list1, list2, result): List[A] = list1 match {
+      case Nil => list2 match {
+        case Nil => result
+        case Cons(h, t) => go(Nil, t, Cons(h, result))
+      }
+      case Cons(h, t) => list2 match {
+        case Nil => go(t, Nil, Cons(h, result))
+        case Cons(h2, t2) => go(t, t2, Cons(h + h2, result))
+      }
+    }
+
+    go(list1, list2, Nil)
+  }
+
+  // (list1, list2) match { ... } という書き方ができる
+
+  // exercise 3.22 模範解答
+  def addPairwise(a: List[Int], b: List[Int]): List[Int] = (a,b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1,t1), Cons(h2,t2)) => Cons(h1+h2, addPairwise(t1,t2))
+  }
+
+  // exercise 3.23
+  def zipWith[A](a: List[A], b: List[A])(f: (A, A) => A): List[A] = (a,b) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1,t1), Cons(h2,t2)) => Cons(f(h1, h2), zipWith(t1,t2)(f))
+  }
 }
 
 object ListTest {
@@ -178,7 +236,7 @@ object ListTest {
     //      case Cons(x, Cons(2, Cons(4, _))) => x
     //      case Nil => 42
     //      case Cons(x, Cons(y, Cons(3, Cons(4, _)))) => x + y
-    //      case Cons(h, t) => h + sum(t)
+    //      case Cons(h, t) => h + sum(t)ot
     //      case _ => 101
     //    }
     //    println(x)
@@ -291,5 +349,35 @@ object ListTest {
     //    val list2 = Nil
     //    println("Expected: List(1,2,3)")
     //    println("Actual:   %s".format(List.append_by_foldRight(list1, list2)))
+
+    // exercise 3.16
+    //    val list = List(1, 2, 3)
+    //    println("Expected: List(2,3,4)")
+    //    println("Actual:   %s".format(List.increment(list)))
+
+    // exercise 3.17
+    //    val list = List(1.1, 2.2, 3.3)
+    //    println("Expected: List(1.1,2.2,3.3)")
+    //    println("Actual:   %s".format(List.doubleToString(list)))
+
+    // exercise 3.18
+    //    val list = List(1, 2, 3)
+    //    println("Expected: List(10,20,30)")
+    //    println("Actual:   %s".format(List.map(list)((a: Int) => a * 10)))
+
+    // exercise 3.19
+    //    val list = List(1, 2, 3, 4, 5)
+    //    println("Expected: List(2,4)")
+    //    println("Actual:   %s".format(List.filter(list)((a: Int) => a % 2 == 0)))
+
+    // exercise 3.20
+    //    val list = List(1, 2, 3)
+    //    println("Expected: List(1,1,2,2,3,3)")
+    //    println("Actual:   %s".format(List.flatMap(list)(i => List(i,i))))
+
+    // exercise 3.21
+    val list = List(1, 2, 3, 4, 5)
+    println("Expected: List(2,4)")
+    println("Actual:   %s".format(List.filterByFlatMap(list)((a: Int) => a % 2 == 0)))
   }
 }
