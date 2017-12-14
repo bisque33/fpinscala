@@ -193,20 +193,20 @@ object List { // `List` companion object. Contains functions for creating and wo
     flatMap(as)(a => if (f(a)) List(a) else Nil)
 
   // exercise 3.22
-  def add[A](list1: List[A], list2: List[A]): List[A] = {
-    def go(list1, list2, result): List[A] = list1 match {
-      case Nil => list2 match {
-        case Nil => result
-        case Cons(h, t) => go(Nil, t, Cons(h, result))
-      }
-      case Cons(h, t) => list2 match {
-        case Nil => go(t, Nil, Cons(h, result))
-        case Cons(h2, t2) => go(t, t2, Cons(h + h2, result))
-      }
-    }
-
-    go(list1, list2, Nil)
-  }
+//  def add[A](list1: List[A], list2: List[A]): List[A] = {
+//    def go(list1, list2, result): List[A] = list1 match {
+//      case Nil => list2 match {
+//        case Nil => result
+//        case Cons(h, t) => go(Nil, t, Cons(h, result))
+//      }
+//      case Cons(h, t) => list2 match {
+//        case Nil => go(t, Nil, Cons(h, result))
+//        case Cons(h2, t2) => go(t, t2, Cons(h + h2, result))
+//      }
+//    }
+//
+//    go(list1, list2, Nil)
+//  }
 
   // (list1, list2) match { ... } という書き方ができる
 
