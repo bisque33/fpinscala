@@ -140,7 +140,17 @@ object PolymorphicFunctions {
 
   // Exercise 2: Implement a polymorphic function to check whether
   // an `Array[A]` is sorted
-  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = ???
+  def isSorted[A](as: Array[A], gt: (A,A) => Boolean): Boolean = {
+    @annotation.tailrec
+    def go(n: Int): Boolean = {
+      if (n >= (as.length - 1)) true
+      else gt(as(n), as(n+1)) && go(n+1)
+    }
+
+    go(0)
+
+    // NOTE: 回答はifがtrueだったらfalseを返しているので、降順のソートを期待している？
+  }
 
   // Polymorphic functions are often so constrained by their type
   // that they only have one implementation! Here's an example:
@@ -175,4 +185,18 @@ object PolymorphicFunctions {
 
   def compose[A,B,C](f: B => C, g: A => B): A => C =
     ???
+}
+
+object PolymorphicFunctionsTest {
+
+  import PolymorphicFunctions._
+
+  // test implementation of `fib`
+  def main(args: Array[String]): Unit = {
+    // exercise 2.2
+    println("Expected: true")
+    println("Actual:   %s".format(isSorted(Array(0, 1, 2), (a: Int, b: Int) => a <= b)))
+    println("Expected: false")
+    println("Actual:   %s".format(isSorted(Array(0, 2, 1), (a: Int, b: Int) => a <= b)))
+  }
 }
