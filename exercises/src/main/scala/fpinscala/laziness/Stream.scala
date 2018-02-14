@@ -57,9 +57,10 @@ trait Stream[+A] {
     foldRight(true)((a, b) => p(a) && b)
 
   // exercise 5.5
-  // 型が合わない
+  // foldRightの第一引数に型を指定しないと、型が不一致になるのでハマった
+  // takeWhile2の戻り値がStream[A]だからfoldRightの戻り値も型推論してくれるものだと思った
   def takeWhile2(p: A => Boolean): Stream[A] =
-    foldRight(Empty)((a, b) =>
+    foldRight(Stream[A]())((a, b) =>
       if (p(a)) Cons(() => a, () => b)
       else b
     )
