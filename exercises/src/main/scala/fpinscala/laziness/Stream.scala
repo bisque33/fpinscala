@@ -21,27 +21,27 @@ trait Stream[+A] {
     case Cons(h, t) => if (f(h())) Some(h()) else t().find(f)
   }
 
-  //  exercise 5.1
+  // exercise 5.1
   def toList(): List[A] = this match {
     case Empty => List()
     case Cons(h, t) => h() :: t().toList
   }
 
-  //  exercise 5.2
+  // exercise 5.2
   def take(n: Int): Stream[A] = this match {
     case Empty => Empty
     case Cons(_, _) if n < 1 => Empty
     case Cons(h, t) => Cons(h, () => t().take(n - 1))
   }
 
-  //  exercise 5.2
+  // exercise 5.2
   def drop(n: Int): Stream[A] = this match {
     case Empty => Empty
     case Cons(_, t) if n > 0 => t().drop(n - 1)
     case Cons(h, t) => Cons(h, t)
   }
 
-  //  exercise 5.3
+  // exercise 5.3
   def takeWhile(p: A => Boolean): Stream[A] = this match {
     case Empty => Empty
     case Cons(h, t) =>
@@ -49,7 +49,20 @@ trait Stream[+A] {
       else t().takeWhile(p)
   }
 
-  def forAll(p: A => Boolean): Boolean = ???
+  // exercise 5.4
+  // Streamの先頭から末尾まで全てp(a)がtrueの場合のみ、trueを返す
+  // Streamの1つでもp(b)がfalseの場合、falseを返す
+  // Emptyは非対応（そもそもStream()は.forAllを呼べない）
+  def forAll(p: A => Boolean): Boolean =
+    foldRight(true)((a, b) => p(a) && b)
+
+  // exercise 5.5
+  // 型が合わない
+  def takeWhile2(p: A => Boolean): Stream[A] =
+    foldRight(Empty)((a, b) =>
+      if (p(a)) Cons(() => a, () => b)
+      else b
+    )
 
   def headOption: Option[A] = ???
 
@@ -104,5 +117,19 @@ object ListStream {
     val stream53 = Stream(1, 2, 3)
     println("Expected: List(1, 3)")
     println("Actual:   %s".format(stream53.takeWhile(a => a % 2 == 1).toList))
+
+    // exercise 5.4
+    val stream54_1 = Stream(1, 2, 3)
+    println("Expected: false")
+    println("Actual:   %s".format(stream54_1.forAll(a => a % 2 == 1)))
+
+    val stream54_2 = Stream(1, 3, 5)
+    println("Expected: true")
+    println("Actual:   %s".format(stream54_2.forAll(a => a % 2 == 1)))
+
+    // exercise 5.5
+    val stream55 = Stream(1, 2, 3)
+    println("Expected: List(1, 3)")
+    println("Actual:   %s".format(stream55.takeWhile2(a => a % 2 == 1).toList))
   }
 }
