@@ -30,17 +30,47 @@ object RNG {
       (f(a), rng2)
     }
 
-  def nonNegativeInt(rng: RNG): (Int, RNG) = ???
+  def nonNegativeInt(rng: RNG): (Int, RNG) = {
+    val (i, next) = rng.nextInt
+    i match {
+      case Int.MinValue => nonNegativeInt(next)
+      case _ => (i.abs, next)
+    }
+  }
 
-  def double(rng: RNG): (Double, RNG) = ???
+  def double(rng: RNG): (Double, RNG) = {
+    val (i, next) = rng.nextInt
+    (i.toDouble / Int.MaxValue.toDouble + 1.0, next)
+  }
 
-  def intDouble(rng: RNG): ((Int,Double), RNG) = ???
+  def intDouble(rng: RNG): ((Int,Double), RNG) = {
+    val (i, next1) = nonNegativeInt(rng)
+    val (d, next2) = double(next1)
+    ((i, d), next2)
+  }
 
-  def doubleInt(rng: RNG): ((Double,Int), RNG) = ???
+  def doubleInt(rng: RNG): ((Double,Int), RNG) = {
+    val (d, next1) = double(rng)
+    val (i, next2) = nonNegativeInt(next1)
+    ((d, i), next2)
+  }
 
-  def double3(rng: RNG): ((Double,Double,Double), RNG) = ???
+  def double3(rng: RNG): ((Double,Double,Double), RNG) = {
+    val (d1, next1) = double(rng)
+    val (d2, next2) = double(next1)
+    val (d3, next3) = double(next2)
+    ((d1, d2, d3), next3)
+  }
 
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) = ???
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+    count match {
+      case x if x <= 0 => (List[Int](), rng)
+      case _ =>
+        val (i1, next) = nonNegativeInt(rng)
+        val (i2, next2) = ints(count - 1)(next)
+        (i1 :: i2, next2)
+    }
+  }
 
   def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = ???
 
