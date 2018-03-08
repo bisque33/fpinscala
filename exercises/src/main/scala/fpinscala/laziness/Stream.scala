@@ -54,7 +54,8 @@ trait Stream[+A] {
   // Streamの1つでもp(b)がfalseの場合、falseを返す
   // Emptyは非対応（そもそもStream()は.forAllを呼べない）
   def forAll(p: A => Boolean): Boolean =
-    foldRight(true)((a, b) => p(a) && b)
+    foldRight(true)((a, b) => b && p(a))
+//  foldRight(true)((a, b) => p(a) && b)
 
   // exercise 5.5
   // foldRightの第一引数に型を指定しないと、型が不一致になるのでハマった
@@ -62,7 +63,7 @@ trait Stream[+A] {
   def takeWhile2(p: A => Boolean): Stream[A] =
     foldRight(Stream[A]())((a, b) =>
       if (p(a)) Cons(() => a, () => b)
-      else b
+      else empty
     )
 
   def headOption: Option[A] = ???
@@ -128,9 +129,14 @@ object ListStream {
     println("Expected: true")
     println("Actual:   %s".format(stream54_2.forAll(a => a % 2 == 1)))
 
+//    val stream54_3 = Stream[Int]()
+    val stream54_3 = Stream()
+    println("Expected: true")
+    println("Actual:   %s".format(stream54_3.forAll(a => false)))
+
     // exercise 5.5
     val stream55 = Stream(1, 2, 3)
-    println("Expected: List(1, 3)")
+    println("Expected: List(1)")
     println("Actual:   %s".format(stream55.takeWhile2(a => a % 2 == 1).toList))
   }
 }
